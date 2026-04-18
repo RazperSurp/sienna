@@ -1,5 +1,10 @@
-<?php
+<?php 
+    require(__DIR__. '/core/Application.php');
+    $config = require(__DIR__. '/config/params.php');
 
-phpinfo();
+    new \core\K420($config);
 
+    echo '<pre>';
+    print_r(\core\K420::$app);
+    exit;
 ?>
