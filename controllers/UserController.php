@@ -8,6 +8,7 @@ use yii\web\Controller;
 use yii\web\Response;
 use app\models\user\LoginForm;
 use app\models\user\RegNewMemberForm;
+use app\models\user\ChangePasswordForm;
 use app\models\user\User;
 
 class UserController extends Controller{
@@ -90,7 +91,7 @@ class UserController extends Controller{
         $model = new RegNewMemberForm();
 
         if($model->load(Yii::$app->request->post()) && $model->validate()){
-            if ($user = $model->signup()) return $this->redirect(['user/index']);;
+            if ($user = $model->signup()) return $this->redirect(['user/index']);
         } else {
             return $this->render('reg-member', ['model' => $model]);
         }
@@ -105,6 +106,16 @@ class UserController extends Controller{
         }
 
         return $this->getUsersByFullname($q, $id);
+    }
+
+    public function actionChangePassword(){
+        $model = new ChangePasswordForm();
+        
+        if($model->load(Yii::$app->request->post()) && $model->changePassword()){
+            Yii::$app->session->setFlash('success', 'Пароль изменен!');
+            return $this->refresh();
+        }
+        return $this->render('change-password', ['model' => $model]);
     }
 
     protected function getUsersByFullname($q = null , $id = null){
