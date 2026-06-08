@@ -44,16 +44,5 @@ class ClubController extends Controller{
         return $this->render('index' , ['clubInfo' => $club]);
     }
 
-    public function actionCreateClub(){
-        $model = new NewClubForm();
-        
-        if ($model->load(Yii::$app->request->post())) {
-            $club = $model->create();
-            if ($club) {
-                return $this->redirect(['index', 'id' => $club->id]);
-            }
-        }
-        return $this->render('create-club', ['model' => $model]);
 
-    }
 }

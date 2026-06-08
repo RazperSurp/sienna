@@ -1,5 +1,6 @@
 <?php
 use yii\widgets\DetailView;
+use app\models\club\Club;
 
 $user = \Yii::$app->user->identity;
 echo DetailView::widget([
@@ -16,6 +17,15 @@ echo DetailView::widget([
             'value' => function ($model) {
                 $roles = Yii::$app->authManager->getRolesByUser($model->id);
                 return $roles ? implode(', ', array_keys($roles)) : 'Нет роли';
+            },
+        ],
+        [
+            'attribute' => 'club',
+            'label' => 'Клуб',
+            'value' => function ($model) {
+                $club = CLub::findById($model->club_id);
+                return $club ? $club->name : 'Вы не состоите ни в одном клубе';
+                // return ((CLub::findById($model->club_id))->name);
             },
         ],
     ],

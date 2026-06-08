@@ -3,7 +3,7 @@ namespace app\models\club;
 
 use Yii;
 use yii\base\Model;
-use app\models\User;
+use app\models\user\User;
 use app\models\club\Club;
 
 class NewClubForm extends Model
@@ -23,9 +23,19 @@ class NewClubForm extends Model
             ['name', 'string'],
 
             ['president_user_id' , 'integer'],
+            ['president_user_id' , 'validatePresident'],
         ];
     }
 
+    public function validatePresident($attribute){
+        if(!$this->hasErrors()){
+            $user = User::findIdentity($this->president_user_id);
+            $auth = Yii::$app->authManager;
+            $userRoleCheck = $auth->getAssignment('admin', $this->president_user_id) !== null 
+              || $auth->getAssignment('clubPresident', $this->president_user_id) !== null;
+            if($userRoleCheck && $user->club_id != null) $this->addError($attribute, 'Этот пользователь уже является председателем клуба');
+        }
+    }
     
     public function create()
     {
@@ -38,6 +48,6 @@ class NewClubForm extends Model
         $club->balance = 0;
         $club->save();
         $club->setNewPresident($this->president_user_id);
-        return $club->save() ? $club : false;
+        return $club ? $club : false;
     }
 }

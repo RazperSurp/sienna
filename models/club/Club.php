@@ -33,9 +33,13 @@ class Club extends ActiveRecord
     public function setNewPresident($userId){
         $auth = Yii::$app->authManager;
         $user = User::findIdentity($userId);
-        if(!$user) return false;
-        $user->changeRole('clubPresident');
+        if (!$user) {
+            return false;
+        }
+        if ($auth->getAssignment('admin', $userId) == null) {
+            $user->changeRole('clubPresident');
+        }
         $user->club_id = $this->id;
-        $user->save();
-    }
+        return $user->save(); 
+        }
 }

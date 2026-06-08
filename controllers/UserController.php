@@ -40,11 +40,6 @@ class UserController extends Controller{
                     ],
                     [
                         'allow' => true,
-                        'actions' => ['change-role'],
-                        'roles' => ['admin'],
-                    ],
-                    [
-                        'allow' => true,
                         'actions' => ['search-users'],
                         'roles' => ['@'],
                     ],
@@ -97,6 +92,16 @@ class UserController extends Controller{
         }
     }
 
+    public function actionChangePassword(){
+        $model = new ChangePasswordForm();
+        
+        if($model->load(Yii::$app->request->post()) && $model->changePassword()){
+            Yii::$app->session->setFlash('success', 'Пароль изменен!');
+            return $this->refresh();
+        }
+        return $this->render('change-password', ['model' => $model]);
+    }
+
     public function actionSearchUsers($q = null, $id = null)
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
@@ -106,16 +111,6 @@ class UserController extends Controller{
         }
 
         return $this->getUsersByFullname($q, $id);
-    }
-
-    public function actionChangePassword(){
-        $model = new ChangePasswordForm();
-        
-        if($model->load(Yii::$app->request->post()) && $model->changePassword()){
-            Yii::$app->session->setFlash('success', 'Пароль изменен!');
-            return $this->refresh();
-        }
-        return $this->render('change-password', ['model' => $model]);
     }
 
     protected function getUsersByFullname($q = null , $id = null){

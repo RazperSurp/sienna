@@ -17,7 +17,7 @@ echo DetailView::widget([
                 $members = (Club::findByName($model->name))->getAllMembers();
                 $owners = [];
                 foreach($members as $member){
-                    if(Yii::$app->authManager->checkAccess($member->id, 'clubPresident')){
+                    if(Yii::$app->authManager->checkAccess($member->id, 'clubPresident') || Yii::$app->authManager->checkAccess($member->id, 'admin')){
                         $owners[] = $member->getFullName();
                     }
                 }
