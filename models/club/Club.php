@@ -3,6 +3,7 @@ namespace app\models\club;
 use Yii;
 use yii\db\ActiveRecord;
 use app\models\user\User;
+use yii\db\Query;
 
 class Club extends ActiveRecord
 {
@@ -41,5 +42,27 @@ class Club extends ActiveRecord
         }
         $user->club_id = $this->id;
         return $user->save(); 
-        }
+    }
+
+    public function getAllEvents(){
+        return (new Query())->select(['*'])
+        ->from('events')
+        ->where(['club_id' => $this->id])
+        ->orderBy([
+            'status' => SORT_DESC,
+            'id' => SORT_DESC
+        ])
+        ->all();
+    }
+
+    public static function findAlikeClubsByName($name){
+        $data = (new Query())
+        ->select(['*', 'name AS text'])
+        ->from('clubs')
+        ->where(['like', 'name', $name . '%', false]) 
+        ->limit(20)
+        ->all();
+
+        return array_values($data);
+    }
 }

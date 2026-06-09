@@ -27,6 +27,11 @@ class ClubController extends Controller{
                         'actions' => ['create-club'],
                         'roles' => ['admin'],
                     ],
+                    [
+                        'allow' => true,
+                        'actions' => ['search-clubs'],
+                        'roles' => ['admin'],
+                    ],
                 ],
                 'denyCallback' => function($rule, $action) {
                     if (Yii::$app->user->isGuest) {
@@ -42,6 +47,30 @@ class ClubController extends Controller{
         $club = Club::findById($id);
         if(!$club) throw new \yii\web\NotFoundHttpException('Такого клуба не сущесвует');
         return $this->render('index' , ['clubInfo' => $club]);
+    }
+
+    public function actionSearchClubs($q = null, $id = null)
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        if (\Yii::$app->user->isGuest) {
+            throw new \yii\web\ForbiddenHttpException('Доступ запрещен.');
+        }
+
+        return $this->getClubsByName($q, $id);
+    }
+
+    protected function getClubsByName($q = null , $id = null){
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $out = ['results' => []];
+
+        if ($q !== null) {
+            $out['results'] = Club::findAlikeClubsByName($q);
+        } elseif ($id > 0) {
+            $out['results'] = ['id' => $id, 'text' => Club::findOne($id)->name];
+        }
+
+        return $out;
     }
 
 

@@ -39,10 +39,9 @@ class createUser extends Model
         ];
     }
 
-    // Метод сохранения нового пользователя
     public function validateClub($attribute , $params){
         if (!$this->hasErrors()) {
-            $club = Club::findByName($this->club);
+            $club = Club::findById($this->club);
             if (!$club) {
                 $this->addError($attribute, 'Указанный клуб не найден.');
             }
@@ -71,7 +70,7 @@ class createUser extends Model
         $user->second_name = $this->second_name;
         $user->third_name = $this->third_name;
         $user->email = $this->email;
-        $club = $this->club ? Club::findByName($this->club) : null;
+        $club = $this->club ? Club::findById($this->club) : null;
         $user->club_id = $club ? $club->id : null;
         $user->setPassword($this->password);
         $user->generateAuthKey();

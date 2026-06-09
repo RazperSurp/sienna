@@ -21,6 +21,8 @@ echo DetailView::widget([
                         $owners[] = $member->getFullName();
                     }
                 }
+                // var_dump($owners);
+                // exit;
                 return implode(' , ' , $owners);
             },
         ],
@@ -37,6 +39,23 @@ echo DetailView::widget([
                 }
 
                 return Html::tag('ul', implode("\n", $membersFullnames));
+            }
+        ],
+        [
+            'attribute' => 'events',
+            'label' => 'events',
+            'format' => 'raw',
+            'value' => function($model) {
+                $events = Club::findByName($model->name)->getAllEvents();
+                $eventsLies = [];
+                foreach ($events as $event) {
+                    $bgColor = $event['status'] ? 'lightgreen' : 'lightcoral';
+                    $eventsLies[] = Html::tag('li', Html::encode($event['name']), [
+                        'style' => "background-color: {$bgColor};"
+                    ]);
+                }
+
+                return Html::tag('ul', implode("\n", $eventsLies));
             }
         ],
     ],
