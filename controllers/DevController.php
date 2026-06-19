@@ -16,6 +16,7 @@ class DevController extends Controller{
 
         if($model->load(Yii::$app->request->post()) && $model->validate()){
             $user = $model->create();
+            Yii::$app->session->setFlash('success', 'Пользователь создан');
         } else {
             return $this->render('createUser', ['model' => $model]);
         }

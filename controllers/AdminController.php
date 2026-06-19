@@ -10,6 +10,7 @@ use app\models\event\Event;
 use app\models\club\NewClubForm;
 use app\models\admin\CreateEvent;
 use app\models\admin\CloseEvent;
+use app\models\admin\ChangePassword;
 
 class AdminController extends Controller{
     public function behaviors(){
@@ -34,7 +35,14 @@ class AdminController extends Controller{
 
 
     public function actionChangePassword(){
+        $model = new ChangePassword();
 
+        if ($model->load(Yii::$app->request->post())) {
+            if ($model->changePassword()) {
+                Yii::$app->session->setFlash('success', 'Пароль пользователя изменен');
+            }
+        }
+        return $this->render('change-password', ['model' => $model]);
     }
 
     public function actionCreateClub(){
