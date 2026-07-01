@@ -73,5 +73,39 @@ class ClubController extends Controller{
         return $out;
     }
 
+    public function actionJoin(){
+    $model = new \app\models\user\BankForm();
+    if ($model->load(Yii::$app->request->post())) {
+        if ($model->joinClub(1)) { 
+            Yii::$app->session->setFlash('success', 'Вы успешно сменили клуб!');
+            return $this->redirect(['index']);
+        } else {
+            Yii::$app->session->setFlash('error', 'Ошибка при смене клуба.');
+        }
+    }
+    $clubsList = \yii\helpers\ArrayHelper::map(\app\models\club\Club::find()->all(), 'id', 'name');
+    return $this->render('join', [
+        'model' => $model,
+        'clubsList' => $clubsList,
+    ]);
+}
+    public function actionDeleteClub(){
+    $model = new \app\models\user\BankForm();
+    if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+        $club = \app\models\club\Club::findOne($model->clubId);
+        if ($club && $club->dismiss()) {
+            Yii::$app->session->setFlash('success', 'Клуб успешно удалён.');
+            return $this->redirect(['index']);
+        } else {
+            Yii::$app->session->setFlash('error', 'Не удалось распустить выбранный клуб.');
+        }
+    }
+    $clubsList = \yii\helpers\ArrayHelper::map(\app\models\club\Club::find()->all(), 'id', 'name');
+    return $this->render('delete-club', [
+        'model' => $model,
+        'clubsList' => $clubsList,
+    ]);
+}
+
 
 }

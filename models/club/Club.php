@@ -65,4 +65,20 @@ class Club extends ActiveRecord
 
         return array_values($data);
     }
+    public function dismiss(){
+    $transaction = Yii::$app->db->beginTransaction();
+    try {
+        \app\models\user\User::updateAll(['club_id' => null], ['club_id' => $this->id]);
+        \app\models\admin\Transaction::deleteAll(['club_id' => $this->id]);
+        if (!$this->delete()) {
+            throw new \Exception('Не удалось удалить запись клуба.');
+        }
+        $transaction->commit();
+        return true;
+    } catch (\Exception $e) {
+        $transaction->rollBack();
+        Yii::error('Ошибка роспуска клуба ID ' . $this->id . ': ' . $e->getMessage());
+        return false;
+    }
+    }
 }

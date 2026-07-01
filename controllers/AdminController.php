@@ -107,5 +107,37 @@ class AdminController extends Controller{
 
         return $out;
     }
+    public function actionTransferUser() {
+        $model = new AdminTransferForm();
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            $user = User::findOne($model->userId);
+            if ($user && $user->changeClub($model->clubId)) {
+                Yii::$app->session->setFlash('success', "Пользователь успешно переведен в новый клуб!");
+                return $this->refresh();
+            } else {
+                Yii::$app->session-setFlash('error', 'Не удалось перевести пользователя');
+            }
+        }
+        return $this->render('transfer-user', [
+            'model' => $model,
+        ]);
+    }
+    public function actionBank(){
+    $model = new \app\models\user\BankForm();
+    $model->clubId = Yii::$app->user->isGuest ? 1 : Yii::$app->user->identity->club_id; 
+    if ($model->load(Yii::$app->request->post())) {
+        if ($model->executeTransaction()) {
+            Yii::$app->session->setFlash('success', 'Операция по счету клуба успешно выполнена!');
+            return $this->refresh();
+        } else {
+            Yii::$app->session->setFlash('error', 'Произошла ошибка при выполнении банковской операции.');
+        }
+    }
+    $clubsList = \yii\helpers\ArrayHelper::map(\app\models\club\Club::find()->all(), 'id', 'name');
+    return $this->render('bank', [
+        'model' => $model,
+        'clubsList' => $clubsList, 
+    ]);
+    }
 
 }
